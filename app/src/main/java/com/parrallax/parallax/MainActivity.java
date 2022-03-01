@@ -26,9 +26,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.material.snackbar.Snackbar;
-import com.schibsted.spain.parallaxlayerlayout.AnimatedTranslationUpdater;
-import com.schibsted.spain.parallaxlayerlayout.ParallaxLayerLayout;
-import com.schibsted.spain.parallaxlayerlayout.SensorTranslationUpdater;
 
 import java.util.ArrayList;
 
@@ -77,12 +74,7 @@ public class MainActivity extends AppCompatActivity {
         parallaxLayout.setTranslationUpdater(new AnimatedTranslationUpdater(0.5f));
 
         // Resets orientation when clicked
-        parallaxLayout.setOnClickListener(new View.OnClickListener() {
-               @Override
-            public void onClick(View v) {
-                translationUpdater.reset();
-            }
-        });
+        parallaxLayout.setOnClickListener(v -> translationUpdater.reset());
     }
     private boolean checkAndRequestPermission() {
         StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();

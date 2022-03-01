@@ -144,7 +144,7 @@ public class ParallaxLayerLayout extends FrameLayout {
         float translationY =
                 ySign * lp.offsetPx * interpolator.getInterpolation(Math.abs(translations[1])) * scaleY;
 
-        return new float[] { translationX, translationY };
+        return new float[] { translationX, translationY }; // vertical horizontal
     }
     //endregion
 
