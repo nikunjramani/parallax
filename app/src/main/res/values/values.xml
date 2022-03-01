@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="ParallaxLayerLayout"><attr format="dimension" name="parallaxOffsetBase"/><attr format="dimension" name="parallaxOffsetIncrement"/><attr format="float" name="parallaxScaleHorizontal"/><attr format="float" name="parallaxScaleVertical"/></declare-styleable>
+    <declare-styleable name="ParallaxLayerLayout_LayoutParams"><attr format="integer" name="layout_parallaxZIndex"/><attr format="float" name="layout_parallaxIncrementMultiplier"/><attr format="boolean" name="layout_parallaxEnabled"/></declare-styleable>
+</resources>
