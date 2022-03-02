@@ -1,4 +1,4 @@
-package com.parrallax.parallax;
+package com.parrallax.parallax.lib;
 
 
 import android.animation.ValueAnimator;

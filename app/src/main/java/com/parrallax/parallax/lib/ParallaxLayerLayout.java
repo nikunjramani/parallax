@@ -1,4 +1,4 @@
-package com.parrallax.parallax;
+package com.parrallax.parallax.lib;
 
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -12,6 +12,8 @@ import android.view.animation.Interpolator;
 import android.widget.FrameLayout;
 
 import androidx.annotation.Size;
+
+import com.parrallax.parallax.R;
 
 public class ParallaxLayerLayout extends FrameLayout {
 
