@@ -20,12 +20,12 @@ public class AnimatedTranslationUpdater implements ParallaxLayerLayout.Translati
     }
 
     @Override
-    public void subscribe(ParallaxLayerLayout parallaxLayerLayout) {
+    public void subscribe(ParallaxLayerLayout parallaxLayerLayout, int speed) {
         this.parallax = parallaxLayerLayout;
         ValueAnimator.AnimatorUpdateListener listener = animator -> parallax.updateTranslations(new float[] { (float) animator.getAnimatedValue(), 0.0f });
 
         animation = ValueAnimator.ofFloat(0.0f, maxParallax, 0.0f, -maxParallax, 0.0f);
-        animation.setDuration(1500); // speed
+        animation.setDuration(speed); // speed
         animation.setInterpolator(new LinearInterpolator());
         animation.setRepeatCount(ValueAnimator.INFINITE);
         animation.setRepeatMode(ValueAnimator.RESTART);

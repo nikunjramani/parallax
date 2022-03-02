@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.os.StrictMode;
 import android.view.View;
 
+import com.bumptech.glide.Glide;
 import com.parrallax.parallax.databinding.ActivityMainOvniBinding;
 import com.parrallax.parallax.databinding.ActivitySpalshBinding;
 
@@ -36,6 +37,8 @@ public class SpalshActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         binding = ActivitySpalshBinding.inflate(getLayoutInflater());
         View view = binding.getRoot();
+        getSupportActionBar().hide();
+
         setContentView(view);
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
 
@@ -43,6 +46,7 @@ public class SpalshActivity extends AppCompatActivity {
         binding.btnOtion.setOnClickListener(view1 -> {
             startActivity(new Intent(SpalshActivity.this,ImageSelectActivity.class));
         });
+
 
     }
     private boolean checkAndRequestPermission() {

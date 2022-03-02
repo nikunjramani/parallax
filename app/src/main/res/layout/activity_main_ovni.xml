@@ -8,42 +8,48 @@
               tools:context=".MainActivity"
     >
 
-  <com.parrallax.parallax.lib.ParallaxLayerLayout
-      android:id="@+id/parallax"
+  <LinearLayout
+      android:id="@+id/ll2"
       android:layout_width="match_parent"
-      android:layout_height="0dp"
-      app:layout_constraintHeight_percent="0.70"
       app:layout_constraintBottom_toTopOf="@id/ll1"
-      app:parallaxScaleVertical="0.25"
-      >
+      app:layout_constraintHeight_percent="0.70"
+      android:layout_height="0dp">
+    <com.parrallax.parallax.lib.ParallaxLayerLayout
+        android:id="@+id/parallax"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:parallaxScaleVertical="0.25"
+        >
 
-    <com.parrallax.parallax.lib.CustomImageView
-        android:id="@+id/image1"
-        android:layout_width="300dp"
-        android:layout_height="300dp"
-        />
+      <com.parrallax.parallax.lib.CustomImageView
+          android:id="@+id/image1"
+          android:layout_width="300dp"
+          android:layout_height="300dp"
+          />
 
-    <com.parrallax.parallax.lib.CustomImageView
-        android:id="@+id/image2"
-        android:layout_width="300dp"
-        android:layout_height="300dp"
-        />
+      <com.parrallax.parallax.lib.CustomImageView
+          android:id="@+id/image2"
+          android:layout_width="300dp"
+          android:layout_height="300dp"
+          />
 
 
-    <com.parrallax.parallax.lib.CustomImageView
-        android:id="@+id/image3"
-        android:layout_width="300dp"
-        android:layout_height="300dp"
+      <com.parrallax.parallax.lib.CustomImageView
+          android:id="@+id/image3"
+          android:layout_width="300dp"
+          android:layout_height="300dp"
 
-        />
+          />
 
-  </com.parrallax.parallax.lib.ParallaxLayerLayout>
+    </com.parrallax.parallax.lib.ParallaxLayerLayout>
+
+  </LinearLayout>
 
 
   <LinearLayout
-      app:layout_constraintTop_toBottomOf="@id/parallax"
+      app:layout_constraintTop_toBottomOf="@id/ll2"
       android:id="@+id/ll1"
-      android:layout_below="@id/parallax"
+      android:layout_below="@id/ll2"
       android:layout_alignParentBottom="true"
       android:layout_width="match_parent"
       android:layout_height="0dp"

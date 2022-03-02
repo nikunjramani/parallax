@@ -124,12 +124,12 @@ public class ParallaxLayerLayout extends FrameLayout {
         }
     }
 
-    public void setTranslationUpdater(TranslationUpdater translationUpdater) {
+    public void setTranslationUpdater(TranslationUpdater translationUpdater,int speed) {
         if (this.translationUpdater != null) {
             this.translationUpdater.unSubscribe();
         }
         this.translationUpdater = translationUpdater;
-        this.translationUpdater.subscribe(ParallaxLayerLayout.this);
+        this.translationUpdater.subscribe(ParallaxLayerLayout.this,speed);
     }
 
     @Size(2)
@@ -174,7 +174,7 @@ public class ParallaxLayerLayout extends FrameLayout {
 
     public interface TranslationUpdater {
 
-        void subscribe(ParallaxLayerLayout parallaxLayerLayout);
+        void subscribe(ParallaxLayerLayout parallaxLayerLayout,int speed);
 
         void unSubscribe();
     }

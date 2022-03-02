@@ -5,6 +5,7 @@ import android.content.ClipData;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -12,6 +13,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.SeekBar;
@@ -37,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
     private SensorTranslationUpdater translationUpdater;
     private ArrayList<String> imagesPathList;
     ArrayList<String> mArrayUri = new ArrayList<String>();
-
+    private int speed = 1500;
     ActivityMainOvniBinding binding;
     String[] effect = { "Sideways", "Up Down"};
     @Override
@@ -70,7 +72,7 @@ public class MainActivity extends AppCompatActivity {
         });
         translationUpdater = new SensorTranslationUpdater(this);
 
-        parallaxLayout.setTranslationUpdater(new AnimatedTranslationUpdater(0.5f));
+        parallaxLayout.setTranslationUpdater(new AnimatedTranslationUpdater(0.5f),speed);
 
         // Resets orientation when clicked
         parallaxLayout.setOnClickListener(v -> translationUpdater.reset());
@@ -83,6 +85,16 @@ public class MainActivity extends AppCompatActivity {
         binding.speed.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+                if(i==0){
+                    i=1;
+                }
+                if(i==100){
+                    i=99;
+                }
+                int ri = 100-i;
+                int speeds = ri*10;
+                Log.d("TAG", "onProgressChanged: "+speeds);
+                parallaxLayout.setTranslationUpdater(new AnimatedTranslationUpdater(0.5f),speeds);
 
             }
 
@@ -96,6 +108,31 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
+        binding.frame.setOnClickListener(view1 -> {
+
+            Intent intent = new Intent();
+            intent.setType("image/*");
+            intent.setAction(Intent.ACTION_GET_CONTENT);
+            startActivityForResult(Intent.createChooser(intent, "Select Picture"), 2);
+        });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 2) {
+
+            if (resultCode == RESULT_OK) {
+                Uri mImageUri = data.getData();
+                BitmapDrawable bd = null;
+                try {
+                    bd = new BitmapDrawable(getResources(), uriToBitmap(mImageUri));
+                    binding.ll2.setBackground(bd);
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }}
     }
 
     public Bitmap uriToBitmap(Uri uri) throws IOException {

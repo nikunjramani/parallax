@@ -35,9 +35,11 @@ public class SensorTranslationUpdater
         this.sensorManager = sensorManager;
     }
 
+
     @Override
-    public void subscribe(ParallaxLayerLayout parallaxLayerLayout) {
+    public void subscribe(ParallaxLayerLayout parallaxLayerLayout, int speed) {
         parallax = parallaxLayerLayout;
+
     }
 
     @Override
