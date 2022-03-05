@@ -37,7 +37,7 @@ public class SensorTranslationUpdater
 
 
     @Override
-    public void subscribe(ParallaxLayerLayout parallaxLayerLayout, int speed) {
+    public void subscribe(ParallaxLayerLayout parallaxLayerLayout, int speed,boolean isVertical) {
         parallax = parallaxLayerLayout;
 
     }
@@ -76,7 +76,7 @@ public class SensorTranslationUpdater
         float roll = vectors[2];
         float pitch = -vectors[1];
 
-        parallax.updateTranslations(new float[] { roll, pitch });
+        parallax.updateTranslations(new float[] { roll, pitch },true);
     }
 
     @Override

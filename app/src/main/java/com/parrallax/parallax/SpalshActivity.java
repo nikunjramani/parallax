@@ -27,6 +27,8 @@ public class SpalshActivity extends AppCompatActivity {
             Manifest.permission.INTERNET,
             Manifest.permission.WRITE_EXTERNAL_STORAGE,
             Manifest.permission.READ_EXTERNAL_STORAGE,
+            Manifest.permission.RECORD_AUDIO,
+            Manifest.permission.FOREGROUND_SERVICE,
             Manifest.permission.RECORD_AUDIO
 
     };
@@ -46,6 +48,7 @@ public class SpalshActivity extends AppCompatActivity {
         binding.btnOtion.setOnClickListener(view1 -> {
             startActivity(new Intent(SpalshActivity.this,ImageSelectActivity.class));
         });
+
 
 
     }

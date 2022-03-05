@@ -20,9 +20,9 @@ public class AnimatedTranslationUpdater implements ParallaxLayerLayout.Translati
     }
 
     @Override
-    public void subscribe(ParallaxLayerLayout parallaxLayerLayout, int speed) {
+    public void subscribe(ParallaxLayerLayout parallaxLayerLayout, int speed,boolean isVertical) {
         this.parallax = parallaxLayerLayout;
-        ValueAnimator.AnimatorUpdateListener listener = animator -> parallax.updateTranslations(new float[] { (float) animator.getAnimatedValue(), 0.0f });
+        ValueAnimator.AnimatorUpdateListener listener = animator -> parallax.updateTranslations(new float[] { (float) animator.getAnimatedValue(), 0.0f },isVertical);
 
         animation = ValueAnimator.ofFloat(0.0f, maxParallax, 0.0f, -maxParallax, 0.0f);
         animation.setDuration(speed); // speed

@@ -69,7 +69,7 @@ public class ParallaxLayerLayout extends FrameLayout {
         computeOffsets();
 
         if (isInEditMode()) {
-            updateTranslations(new float[] { 1.0f, 1.0f });
+            updateTranslations(new float[] { 1.0f, 1.0f },true);
         }
     }
 
@@ -80,7 +80,7 @@ public class ParallaxLayerLayout extends FrameLayout {
         computeOffsets();
 
         if (isInEditMode()) {
-            updateTranslations(new float[] { 1.0f, 1.0f });
+            updateTranslations(new float[] { 1.0f, 1.0f },true);
         }
     }
 
@@ -110,7 +110,7 @@ public class ParallaxLayerLayout extends FrameLayout {
     /**
      * @param translations X and Y translation percentage, with values from -1.0 to 1.0.
      */
-    public void updateTranslations(@Size(2) float[] translations) {
+    public void updateTranslations(@Size(2) float[] translations,boolean isVertical) {
         if (Math.abs(translations[0]) > 1 || Math.abs(translations[1]) > 1) {
             throw new IllegalArgumentException("Translation values must be between 1.0 and -1.0");
         }
@@ -118,22 +118,22 @@ public class ParallaxLayerLayout extends FrameLayout {
         final int childCount = getChildCount();
         for (int i = childCount - 1; i >= 0; i--) {
             View child = getChildAt(i);
-            float[] translationsPx = calculateFinalTranslationPx(child, translations);
+            float[] translationsPx = calculateFinalTranslationPx(child, translations,isVertical);
             child.setTranslationX(translationsPx[0]);
             child.setTranslationY(translationsPx[1]);
         }
     }
 
-    public void setTranslationUpdater(TranslationUpdater translationUpdater,int speed) {
+    public void setTranslationUpdater(TranslationUpdater translationUpdater,int speed,boolean isVertical) {
         if (this.translationUpdater != null) {
             this.translationUpdater.unSubscribe();
         }
         this.translationUpdater = translationUpdater;
-        this.translationUpdater.subscribe(ParallaxLayerLayout.this,speed);
+        this.translationUpdater.subscribe(ParallaxLayerLayout.this,speed,isVertical);
     }
 
     @Size(2)
-    private float[] calculateFinalTranslationPx(View child, @Size(2) float[] translations) {
+    private float[] calculateFinalTranslationPx(View child, @Size(2) float[] translations,boolean isVertical) {
         LayoutParams lp = (LayoutParams) child.getLayoutParams();
         if (!lp.enabled) {
             return new float[] { 0f, 0f };
@@ -146,7 +146,13 @@ public class ParallaxLayerLayout extends FrameLayout {
         float translationY =
                 ySign * lp.offsetPx * interpolator.getInterpolation(Math.abs(translations[1])) * scaleY;
 
-        return new float[] { translationX, translationY }; // vertical horizontal
+        if(isVertical){
+            return new float[] { translationX, translationY }; // vertical horizontal
+
+        }else{
+            return new float[] {  translationY,translationX }; // vertical horizontal
+
+        }
     }
     //endregion
 
@@ -174,7 +180,7 @@ public class ParallaxLayerLayout extends FrameLayout {
 
     public interface TranslationUpdater {
 
-        void subscribe(ParallaxLayerLayout parallaxLayerLayout,int speed);
+        void subscribe(ParallaxLayerLayout parallaxLayerLayout,int speed,boolean isVertical);
 
         void unSubscribe();
     }

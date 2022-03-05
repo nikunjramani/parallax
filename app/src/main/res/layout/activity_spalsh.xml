@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -7,20 +7,31 @@
     tools:context=".SpalshActivity">
 
     <pl.droidsonroids.gif.GifImageView
+        android:layout_above="@id/title"
         android:id="@+id/video_view"
         android:src="@drawable/splash_gif"
-
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
-
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/btn_otion"
+    <TextView
+        android:id="@+id/title"
         android:layout_marginBottom="20sp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textColor="#3D5AFE"
         android:textStyle="bold"
+        android:textSize="17sp"
+        android:textAlignment="center"
         android:background="@color/white"
         android:text="Add motion to your world"
+        android:layout_above="@id/btn_otion"
         app:layout_constraintBottom_toBottomOf="parent" />
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <Button
+        android:layout_alignParentBottom="true"
+        android:id="@+id/btn_otion"
+        android:layout_marginBottom="10sp"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:textStyle="bold"
+        android:text="Get Started"
+        app:layout_constraintBottom_toBottomOf="parent" />
+</RelativeLayout>

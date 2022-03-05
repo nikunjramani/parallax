@@ -8,18 +8,33 @@
               tools:context=".MainActivity"
     >
 
-  <LinearLayout
+  <Button
+      android:id="@+id/fullscreen"
+      android:layout_width="50dp"
+      android:layout_height="50dp"
+      android:clickable="true"
+      android:background="@drawable/ic_fullscreen"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintTop_toTopOf="parent"
+      android:focusable="true" />
+  <RelativeLayout
       android:id="@+id/ll2"
       android:layout_width="match_parent"
       app:layout_constraintBottom_toTopOf="@id/ll1"
       app:layout_constraintHeight_percent="0.70"
       android:layout_height="0dp">
+
     <com.parrallax.parallax.lib.ParallaxLayerLayout
         android:id="@+id/parallax"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:parallaxScaleVertical="0.25"
         >
+
+      <com.parrallax.parallax.lib.CustomImageView
+          android:id="@+id/image4"
+          android:layout_width="match_parent"
+          android:layout_height="match_parent"/>
 
       <com.parrallax.parallax.lib.CustomImageView
           android:id="@+id/image1"
@@ -43,7 +58,7 @@
 
     </com.parrallax.parallax.lib.ParallaxLayerLayout>
 
-  </LinearLayout>
+  </RelativeLayout>
 
 
   <LinearLayout
@@ -106,41 +121,10 @@
           android:backgroundTint="#EFECEC"
           app:cardCornerRadius="10dp">
 
-        <LinearLayout
-            android:layout_gravity="center"
-            android:gravity="center"
+        <androidx.recyclerview.widget.RecyclerView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="horizontal">
-
-            <ImageView
-                android:layout_marginLeft="10dp"
-                android:layout_marginRight="10dp"
-                android:id="@+id/small_image1"
-                android:layout_width="0dp"
-                android:layout_height="80dp"
-                android:layout_weight="1" />
-
-
-            <ImageView
-                android:layout_marginLeft="10dp"
-                android:layout_marginRight="10dp"
-                android:id="@+id/small_image2"
-                android:layout_width="0dp"
-                android:layout_height="80dp"
-                android:layout_weight="1" />
-
-
-            <ImageView
-                android:layout_marginLeft="10dp"
-                android:layout_marginRight="10dp"
-                android:id="@+id/small_image3"
-                android:layout_width="0dp"
-                android:layout_height="80dp"
-                android:layout_weight="1" />
-
-
-        </LinearLayout>
+          android:id="@+id/recycler_view"/>
       </androidx.cardview.widget.CardView>
 
       <Button
