@@ -5,6 +5,9 @@ import static android.content.res.Configuration.ORIENTATION_PORTRAIT;
 import static com.hbisoft.hbrecorder.Constants.MAX_FILE_SIZE_REACHED_ERROR;
 import static com.hbisoft.hbrecorder.Constants.SETTINGS_ERROR;
 
+import static java.sql.Types.DATE;
+import static java.sql.Types.TIME;
+
 import android.Manifest;
 import android.app.Activity;
 import android.app.Dialog;
@@ -14,11 +17,14 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.media.MediaMetadataRetriever;
+import android.media.MediaPlayer;
 import android.media.MediaScannerConnection;
 import android.media.projection.MediaProjectionManager;
 import android.net.Uri;
@@ -40,6 +46,7 @@ import android.widget.SeekBar;
 import android.widget.Toast;
 
 import androidx.annotation.DrawableRes;
+import androidx.annotation.LongDef;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
@@ -54,21 +61,31 @@ import com.hbisoft.hbrecorder.HBRecorderCodecInfo;
 import com.hbisoft.hbrecorder.HBRecorderListener;
 import com.parrallax.parallax.databinding.ActivityChooseConversionBinding;
 import com.parrallax.parallax.databinding.ActivityMainOvniBinding;
+import com.parrallax.parallax.lib.AnimatedGifEncoder;
 import com.parrallax.parallax.lib.AnimatedTranslationUpdater;
 import com.parrallax.parallax.lib.ParallaxLayerLayout;
 import com.parrallax.parallax.lib.SensorTranslationUpdater;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.sql.Date;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-public class MainActivity extends AppCompatActivity implements HBRecorderListener, ItemMoveCallback.ItemListner {
+import nl.bravobit.ffmpeg.ExecuteBinaryResponseHandler;
+import nl.bravobit.ffmpeg.FFmpeg;
+
+public class MainActivity extends AppCompatActivity implements HBRecorderListener {
 
     private static final int SCREEN_RECORD_REQUEST_CODE = 100;
     private static final int PERMISSION_REQ_ID_RECORD_AUDIO = 101;
@@ -151,7 +168,7 @@ public class MainActivity extends AppCompatActivity implements HBRecorderListene
 
         hbRecorder = new HBRecorder(this, this);
         hbRecorder.setVideoEncoder("H264");
-
+        hbRecorder.isAudioEnabled(false);
         //Setting the ArrayAdapter data on the Spinner
         binding.effect.setAdapter(aa);
         binding.effect.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -251,6 +268,7 @@ public class MainActivity extends AppCompatActivity implements HBRecorderListene
                 }
             }
         };
+
         mAdapter = new RecyclerViewAdapter(this,mArrayUri,itemListner);
 
         ItemTouchHelper.Callback callback =
@@ -287,7 +305,7 @@ public class MainActivity extends AppCompatActivity implements HBRecorderListene
                 BitmapDrawable bd = null;
                 try {
                     bd = new BitmapDrawable(getResources(), uriToBitmap(mImageUri));
-                    binding.image4.setBackground(bd);
+                    binding.ll2.setBackground(bd);
 
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -298,6 +316,17 @@ public class MainActivity extends AppCompatActivity implements HBRecorderListene
                 //Start screen recording
                 hbRecorder.startScreenRecording(data, resultCode, this);
 
+            }
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            if (requestCode == SCREEN_RECORD_REQUEST_CODE) {
+                if (resultCode == RESULT_OK) {
+                    //Set file path or Uri depending on SDK version
+                    setOutputPath();
+                    //Start screen recording
+                    hbRecorder.startScreenRecording(data, resultCode, this);
+
+                }
             }
         }
     }
@@ -327,6 +356,7 @@ public class MainActivity extends AppCompatActivity implements HBRecorderListene
     @Override
     public void HBRecorderOnComplete() {
         Toast.makeText(this, "Completed", Toast.LENGTH_SHORT).show();
+        Log.d(TAG, "HBRecorderOnComplete: "+mUri);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             //Update gallery depending on SDK Level
             if (hbRecorder.wasUriSet()) {
@@ -359,7 +389,7 @@ public class MainActivity extends AppCompatActivity implements HBRecorderListene
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setContentView(R.layout.activity_choose_conversion);
         dialog.findViewById(R.id.pro).setOnClickListener(v -> {
-            hbRecorder.recordHDVideo(true);
+            hbRecorder.recordHDVideo(false);
             startStopRecording(false);
            dialog.dismiss();
        });
@@ -381,6 +411,7 @@ public class MainActivity extends AppCompatActivity implements HBRecorderListene
     }
 
     void startStopRecording(boolean isGif){
+
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         binding.fullscreen.setVisibility(View.GONE);
@@ -401,7 +432,9 @@ public class MainActivity extends AppCompatActivity implements HBRecorderListene
             binding.ll1.setVisibility(View.VISIBLE);
             getSupportActionBar().show();
             binding.ll2.getLayoutParams().height =originalHeight;
-        }, 12000);
+//            convertToGIF();
+
+        }, 15000);
     }
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     private void setOutputPath() {
@@ -409,17 +442,18 @@ public class MainActivity extends AppCompatActivity implements HBRecorderListene
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             resolver = getContentResolver();
             contentValues = new ContentValues();
-            contentValues.put(MediaStore.Video.Media.RELATIVE_PATH, "SpeedTest/" + "SpeedTest");
+            contentValues.put(MediaStore.Video.Media.RELATIVE_PATH, "Movies/" );
             contentValues.put(MediaStore.Video.Media.TITLE, filename);
             contentValues.put(MediaStore.MediaColumns.DISPLAY_NAME, filename);
             contentValues.put(MediaStore.MediaColumns.MIME_TYPE, "video/mp4");
             mUri = resolver.insert(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, contentValues);
+
             //FILE NAME SHOULD BE THE SAME
             hbRecorder.setFileName(filename);
             hbRecorder.setOutputUri(mUri);
         }else{
             createFolder();
-            hbRecorder.setOutputPath(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES) +"/HBRecorder");
+            hbRecorder.setOutputPath(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES) +"/Movies");
         }
     }
     private void updateGalleryUri(){
@@ -462,10 +496,93 @@ public class MainActivity extends AppCompatActivity implements HBRecorderListene
             }
         }
     }
-
-    @Override
-    public void onMove(ArrayList<String> arrayList) {
-        Log.d(TAG, "onMove: ");
-
+    private String getRealPathFromURI(Uri contentURI) {
+        String result;
+        Cursor cursor = getContentResolver().query(contentURI, null, null, null, null);
+        if (cursor == null) { // Source is Dropbox or other similar local file path
+            result = contentURI.getPath();
+        } else {
+            cursor.moveToFirst();
+            int idx = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA);
+            result = cursor.getString(idx);
+            cursor.close();
+        }
+        return result;
     }
+    public String getPath(Uri uri) {
+        String[] projection = {MediaStore.Images.Media.DATA};
+        Cursor cursor = managedQuery(uri, projection, null, null, null);
+        if (cursor != null) {
+            // HERE YOU WILL GET A NULLPOINTER IF CURSOR IS NULL
+            // THIS CAN BE, IF YOU USED OI FILE MANAGER FOR PICKING THE MEDIA
+            int column_index = cursor
+                    .getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+            cursor.moveToFirst();
+            return cursor.getString(column_index);
+        } else
+            return null;
+    }
+//    void convertToGIF(){
+//        Log.d(TAG, "convertToGIF: "+getRealPathFromURI(mUri));
+//
+//
+//        String[] list = getPath(mUri).split("/");
+//        String s = "SD"+list[list.length-1];
+//        list[list.length-1] =s;
+//        StringBuilder finalpath = new StringBuilder();
+//        for(int i=0;i<list.length;i++){
+//            if(i+1<list.length){
+//                finalpath.append(list[i]).append("/");
+//            }else {
+//                finalpath.append(list[i]);
+//            }
+//        }
+//
+//        Log.d(TAG, "convertToGIF: "+finalpath);
+//        // Get your video file
+//        File myVideo = new File(String.valueOf(finalpath));
+//        Log.d(TAG, "convertToGIF: "+myVideo.getPath());
+//
+//// URI to your video file
+//        Uri myVideoUri = Uri.parse(myVideo.toString());
+//
+//// MediaMetadataRetriever instance
+//        MediaMetadataRetriever mmRetriever = new MediaMetadataRetriever();
+//
+//            mmRetriever.setDataSource(finalpath.toString());
+//        ArrayList<Bitmap> frames = new ArrayList<Bitmap>();
+//        Bitmap bitmap = mmRetriever.getFrameAtTime();
+//        frames.add(bitmap);
+//        if(bitmap!=null){
+//            binding.image1.setImageBitmap(bitmap);
+//        }else {
+//            Log.d(TAG, "convertToGIF: issues"+frames);
+//        }
+//
+//        saveGif(frames);
+//
+//    }
+
+//    public byte[] generateGIF(ArrayList<Bitmap> bitmaps) {
+//        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+//        AnimatedGifEncoder encoder = new AnimatedGifEncoder();
+//        encoder.start(bos);
+//        for (Bitmap bitmap : bitmaps) {
+//            encoder.addFrame(bitmap);
+//        }
+//        encoder.finish();
+//        return bos.toByteArray();
+//    }
+//
+//    public void saveGif(ArrayList<Bitmap> bitmaps) {
+//        try {
+//            FileOutputStream outStream = new FileOutputStream("/sdcard/test.gif");
+//            outStream.write(generateGIF(bitmaps));
+//            outStream.close();
+//        } catch(Exception e) {
+//            e.printStackTrace();
+//        }
+//    }
+
+
 }

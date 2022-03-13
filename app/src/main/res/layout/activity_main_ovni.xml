@@ -32,27 +32,22 @@
         >
 
       <com.parrallax.parallax.lib.CustomImageView
-          android:id="@+id/image4"
-          android:layout_width="match_parent"
-          android:layout_height="match_parent"/>
-
-      <com.parrallax.parallax.lib.CustomImageView
           android:id="@+id/image1"
           android:layout_width="300dp"
-          android:layout_height="300dp"
+          android:layout_height="450dp"
           />
 
       <com.parrallax.parallax.lib.CustomImageView
           android:id="@+id/image2"
           android:layout_width="300dp"
-          android:layout_height="300dp"
+          android:layout_height="450dp"
           />
 
 
       <com.parrallax.parallax.lib.CustomImageView
           android:id="@+id/image3"
           android:layout_width="300dp"
-          android:layout_height="300dp"
+          android:layout_height="450dp"
 
           />
 

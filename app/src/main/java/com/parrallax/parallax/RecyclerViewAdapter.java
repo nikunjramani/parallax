@@ -48,10 +48,6 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         this.itemListner = itemListner;
     }
 
-    public ArrayList<String> getCurrentList(){
-        return  data;
-    }
-
     @Override
     public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.card_view_row, parent, false);
